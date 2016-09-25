@@ -7,7 +7,8 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-#define ONE_WIRE_BUS 2
+#define ONE_WIRE_BUS 3
+#define RELAY 2
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
@@ -15,6 +16,8 @@ DallasTemperature sensors(&oneWire);
 void setup(void)
 {
   Serial.begin(9600);
+  pinMode(RELAY, OUTPUT);
+  digitalWrite(RELAY, LOW);
   sensors.begin();
 }
 
@@ -27,8 +30,14 @@ void loop(void)
     tempC = tempC + sensors.getTempCByIndex(i);
   }
   tempC = tempC / sensors.getDeviceCount();
-  Serial.print(tempC);
-  Serial.println();
-  delay(1000);
+  Serial.println(tempC);
+
+  if (Serial.available() > 0) {
+    if (1 == Serial.parseInt()) {
+      digitalWrite(RELAY, HIGH);
+    } else {
+      digitalWrite(RELAY, LOW);
+    }
+  }
 }
 
